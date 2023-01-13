@@ -1,31 +1,115 @@
-<div class="card">
-  <div class="card-body p-0 m-3">
-    <div class="row g-md-5">
-      <div class="col-md-4">
-        <img class="rounded img-responsive center-block m-0" src="{{user.image}}"
-        style="width: 350px; margin-bottom: 25px; transition: opacity 0.5s; opacity:0;" onload="this.style.opacity=1;">
-      </div>
-      <div class="col-md-8">
-        <div class="mx-auto mb-5">
-          <h3>{{user.name}}</h3>
-          <h6>{{user.email}}</h6>
+<div class="container">
+
+  <div class="row card mb-3">
+    <div class="col card-body">
+      <div class="row p-sm-5 p-md-0">
+        <div class="col-12 col-md-4 col-lg-3 mb-3 mb-md-0">
+          <img class="rounded img-responsive center-block m-0" src="{{userProfile.image}}"
+          style="width: 100%; transition: opacity 0.5s; opacity:0;" onload="this.style.opacity=1;">
         </div>
-        <a href="/users/{{user.id}}/edit" class="btn btn-secondary">Edit</a>
+
+        <div class="col">
+          <div class="user-info row">
+            <div class="col col-md-6 col-lg-3">
+              <h3 class="mb-3">{{userProfile.name}}</h3>
+              <h6 class="mb-4">{{userProfile.email}}</h6>
+              {{#ifCond userProfile.id user.id}}
+                <div class="btn-option">
+                  <a href="/users/{{userProfile.id}}/edit" class="btn btn-secondary">Edit</a>
+                </div>
+              {{/ifCond}}
+            </div>
+
+            <div class="col-auto">
+              <p>已評論餐廳：{{comments.length}}</p>
+              <p>已收藏餐廳：{{userProfile.FavoritedRestaurants.length}}</p>
+              <p>已說讚餐廳：{{userProfile.LikedRestaurants.length}}</p>
+              <p>Followers（跟隨者）：{{userProfile.Followers.length}}</p>
+              <p>Followings（追蹤中）：{{userProfile.Followings.length}}</p>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row g-3">
+    <div class="user-area col-12 col-lg-5 me-0 me-lg-4">
+      <div class="row card mb-3">
+        <div class="col card-header">Your Followers（跟隨者）：{{userProfile.Followers.length}} 位</div>
+        <div class="col card-body">
+          <div class="row g-2">
+            {{#each userProfile.Followers}}
+              <div class="col-2">
+                <a href="/users/{{this.id}}" style="text-decoration:none">
+                  <img class="rounded img-responsive center-block" src="{{this.image}}" style="width: 100%; transition: opacity 0.5s; opacity:0;" onload="this.style.opacity=1;">
+                </a>
+              </div>
+            {{/each}}
+          </div>
+        </div>
+      </div>
+      <div class="row card">
+        <div class="col card-header">Your Followings（追蹤中）：{{userProfile.Followings.length}} 位</div>
+        <div class="col card-body">
+          <div class="row g-2">
+            {{#each userProfile.Followings}}
+              <div class="col-2">
+                <a href="/users/{{this.id}}" style="text-decoration:none">
+                  <img class="rounded img-responsive center-block" src="{{this.image}}" style="width: 100%; transition: opacity 0.5s; opacity:0;" onload="this.style.opacity=1;">
+                </a>
+              </div>
+            {{/each}}
+          </div>
+        </div>
       </div>
     </div>
 
-  </div>
-</div>
+    <div class="restaurant-area col">
+      <div class="row card mb-3">
+        <div class="col card-header">已評論的餐廳：{{comments.length}} 個</div>
+        <div class="col card-body">
+          <div class="row g-2">
+            {{#each comments}}
+              <div class="col-2">
+                <a href="/restaurants/{{this.Restaurant.id}}" style="text-decoration:none">
+                  <img class="rounded img-responsive center-block" src="{{this.Restaurant.image}}" style="width: 100%; transition: opacity 0.5s; opacity:0;" onload="this.style.opacity=1;">
+                </a>
+              </div>
+            {{/each}}
+          </div>
+        </div>
+      </div>
+      <div class="row card mb-4">
+        <div class="col card-header">已收藏的餐廳：{{userProfile.FavoritedRestaurants.length}} 個</div>
+        <div class="col card-body">
+          <div class="row g-2">
+            {{#each userProfile.FavoritedRestaurants}}
+              <div class="col-2">
+                <a href="/restaurants/{{this.id}}" style="text-decoration:none">
+                  <img class="rounded img-responsive center-block" src="{{this.image}}" style="width: 100%; transition: opacity 0.5s; opacity:0;" onload="this.style.opacity=1;">
+                </a>
+              </div>
+            {{/each}}
+          </div>
+        </div>
+      </div>
+      <div class="row card">
+        <div class="col card-header">已說讚的餐廳：{{userProfile.LikedRestaurants.length}} 個</div>
+        <div class="col card-body">
+          <div class="row g-2">
+            {{#each userProfile.LikedRestaurants}}
+              <div class="col-2">
+                <a href="/restaurants/{{this.id}}" style="text-decoration:none">
+                  <img class="rounded img-responsive center-block" src="{{this.image}}" style="width: 100%; transition: opacity 0.5s; opacity:0;" onload="this.style.opacity=1;">
+                </a>
+              </div>
+            {{/each}}
+          </div>
+        </div>
+      </div>
+    </div>
 
-<div class="card my-4">
-  <div class="card-header">
-    已評論餐廳：{{commits.count}} 個
-  </div>
-  <div class="d-flex flex-wrap">
-  {{#each commits.rows}}
-    <a href="/restaurants/{{this.Restaurant.id}}" class="m-2" style="text-decoration:none">
-      <img class="rounded img-responsive center-block m-0" src="{{this.Restaurant.image}}" style="width: 120px; height: 80px; margin-bottom: 25px; transition: opacity 0.5s; opacity:0;" onload="this.style.opacity=1;">
-    </a>
-  {{/each}}
   </div>
 </div>

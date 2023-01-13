@@ -46,24 +46,44 @@ const userController = {
     res.redirect('/signin')
   },
   getUser: (req, res, next) => {
-    const { id } = req.params
+    const userId = req.params.id
     return Promise.all([
-      User.findByPk(id, { raw: true }),
-      Comment.findAndCountAll({
-        where: { userId: id },
+      User.findByPk(userId, {
+        include: [
+          { model: Restaurant, as: 'FavoritedRestaurants' },
+          { model: Restaurant, as: 'LikedRestaurants' },
+          { model: User, as: 'Followers' },
+          { model: User, as: 'Followings' }
+        ]
+      }),
+      Comment.findAll({
+        where: { userId },
         include: Restaurant,
         raw: true,
         nest: true
       })
     ])
-      .then(([user, commits]) => {
+      .then(([user, comments]) => {
         if (!user) throw new Error('User is not existed!')
-        res.render('users/profile', { user, commits })
+        // 處理Comments，重複評論同一間餐廳，讓餐廳只會出現一次
+        const newComments = Object.assign([], comments)
+        for (let a = 0; a < newComments.length; a++) {
+          let b = newComments.length - 1
+          while (a !== b) {
+            if (newComments[a].restaurantId === newComments[b].restaurantId) newComments.splice(b, 1)
+            b -= 1
+          }
+        }
+        res.render('users/profile', {
+          userProfile: user.toJSON(),
+          comments: newComments
+        })
       })
       .catch(err => next(err))
   },
   editUser: (req, res, next) => {
-    const { id } = req.params
+    const id = Number(req.params.id)
+    if (req.user.id !== id) throw new Error('Can not edit profile of other user!')
     return User.findByPk(id, {
       raw: true
     })
