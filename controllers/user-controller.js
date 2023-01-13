@@ -155,8 +155,11 @@ const userController = {
       .catch(err => next(err))
   },
   addFollowing: (req, res, next) => {
-    const followingId = req.params.userId
-    const followerId = req.user.id
+    const followingId = Number(req.params.userId)
+    const followerId = Number(req.user.id)
+    // 檢查自己的id與追蹤者的id（限制不能追蹤自己）
+    if (followingId === followerId) throw new Error('Can not follow yourself!')
+
     return Promise.all([
       User.findByPk(followingId),
       Followship.findOne({
